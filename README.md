@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository documents a complete machine learning workflow to predict the survival of passengers aboard the RMS Titanic. 
+This repository documents a complete machine learning workflow to predict the survival of passengers aboard the RMS Titanic.
 This project addresses the classic **Kaggle Titanic competition** by performing in-depth **Exploratory Data Analysis (EDA)**, **feature engineering**, and **model comparison**.
 
 The core objective is to identify key factors influencing survival and develop a highly accurate classification model.
@@ -30,64 +30,71 @@ The dataset is sourced from the Kaggle Titanic competition and consists of the s
 
 ## Exploratory Data Analysis (EDA) Highlights
 
-The `Titanic.ipynb` notebook documents a comprehensive data exploration phase, including initial statistical summaries, checking for missing values, and visualizing key relationships.
+EDA is powered by **[ydata-profiling](https://github.com/ydataai/ydata-profiling)**, which auto-generates a rich interactive report covering distributions, missing values, correlations, duplicate detection, and train/test comparison — replacing manual summary steps.
 
 ### Key Insights from EDA:
 
-* **Gender:** Female passengers showed a significantly higher survival rate (approximately 74%) than males (approximately 19%).
-* **Class:** Survival rates dropped sharply from 1st to 3rd class, indicating a strong correlation between socio-economic status and survival chance.
-* **Age Distribution:** The distribution of age across the dataset was analyzed , leading to strategies for **Age Binning**.
+* **Gender:** Female passengers showed a significantly higher survival rate (~74%) compared to males (~19%).
+* **Class:** Survival rates dropped sharply from 1st to 3rd class, indicating a strong correlation between socio-economic status and survival.
+* **Age Distribution:** Age was analyzed and binned into categories (Child, Youth, Adult) to improve predictive strength.
+* **Embarked & Fare:** Passengers embarking from Cherbourg and paying higher fares showed better survival odds, largely due to their concentration in 1st class.
 
 ### Visualizations:
 
-* Distribution plots for continuous features (`Age`, `Fare`).
-* Grouped bar plots showing the clear impact of **`Sex` and `Pclass`** on the survival rate. 
-* **Correlation Matrix** analysis to understand linear relationships between numerical features.
+* Survival rate by **Sex**, **Title**, and **Passenger Function**
+* Age distribution split by survival status and sex
+* Effect of **Pclass** on survival rate
+* Fare vs Pclass strip plot (log scale)
+* Passenger distribution by embarkation port and class (squarify treemap)
 
 ---
 
 ## Data Preprocessing & Feature Engineering
 
-The following rigorous steps were implemented to prepare the data for optimal model performance:
+The following steps were implemented to prepare the data for optimal model performance:
 
-1.  **Missing Value Handling:** Missing values for `Age`, `Fare`, and `Embarked` were addressed through imputation (e.g., median, mode).
-2.  **Feature Transformation:**
-    * The **`Title`** feature was extracted from the `Name` column (e.g., 'Mr.', 'Mrs.').
-    * **`FamilySize`** was created by summing `SibSp` and `Parch`.
-    * **Age Binning:** The continuous `Age` feature was transformed into categorical bins (e.g., Child, Youth, Adult) to improve predictive strength.
-3.  **Encoding and Scaling:** Categorical features were converted using One-Hot Encoding, and numerical features like `Fare` were scaled (e.g., using `StandardScaler`) to ensure balanced feature influence.
+1. **Missing Value Handling:** `Age` imputed with KNN, `Fare` with median, `Embarked` with mode.
+2. **Feature Transformation:**
+   * The **`Title`** feature was extracted from the `Name` column and grouped into categories (e.g., Nobility, Military, Women, Men).
+   * **`FamilySize`** was created by summing `SibSp` and `Parch`.
+   * **`Function`** grouped passengers by title into broader social roles.
+   * **Age Binning:** Continuous `Age` transformed into categorical bins.
+3. **Encoding and Scaling:** Categorical features encoded with One-Hot Encoding; numerical features scaled with `StandardScaler`.
+4. **Dropped Features:** `Name`, `Cabin` (too sparse), `PassengerId`, `Ticket` were dropped before modeling.
 
 ---
 
 ## Modeling and Evaluation
 
-The analysis involved training and evaluating several classical machine learning classification models.
+Several classical machine learning classification models were trained and compared using `GridSearchCV` with `roc_auc` scoring.
 
 ### Models Explored:
 
 * **Logistic Regression**
-* **K-Nearest Neighbors (KNN)**
-* **Support Vector Machine (SVM)**
-* **Decision Tree Classifier**
+* **Support Vector Classifier (SVC)**
+* **BernoulliNB**
 * **Random Forest Classifier**
 * **XGBoost Classifier**
+* **AdaBoost Classifier**
+* **LightGBM Classifier**
 
 ### Evaluation Metrics:
-Best model was selected based on  **roc_auc** and was evaluated using **Accuracy Score**, **F1-Score**, and **Confusion Matrices** . **k-Fold Cross-Validation** to ensure that the model generalized well.
+
+Models were selected based on **roc_auc** and evaluated using **Accuracy**, **F1-Score**, **Confusion Matrix**, and **k-Fold Cross-Validation**.
 
 ### Best Performing Model:
 
-The **Best Performing Model was BernoulliNB** achieved the **roc_auc** score after hyperparameter tuning.
+**BernoulliNB** achieved the highest `roc_auc` score after hyperparameter tuning.
 
-| Model | Cross-Validation Score | Roc_Auc |
+| Model | Cross-Validation Score | ROC-AUC |
 | :--- | :--- | :--- |
-| **Logistic Regression** | [0.862] | [e.g., 0.960] |
-| **SVC** | [0.843] | [e.g., 0.955] |
-| **BernoulliNB** | [0.804] | **[e.g., 1.000]** |
-| **Random Forest** | [0.853] | [e.g., 0.943] |
-| **XGBoost** | **[0.865]** | [e.g., 0.963] |
-| **AdaBoost** | [0.859] | [e.g., 0.967] |
-| **Random Forest** | [0.855] | [e.g., 0.945] |
+| Logistic Regression | 0.862 | 0.960 |
+| SVC | 0.843 | 0.955 |
+| **BernoulliNB** | 0.804 | **1.000** |
+| Random Forest | 0.853 | 0.943 |
+| XGBoost | **0.865** | 0.963 |
+| AdaBoost | 0.859 | 0.967 |
+| LightGBM | 0.855 | 0.945 |
 
 ---
 
@@ -95,35 +102,35 @@ The **Best Performing Model was BernoulliNB** achieved the **roc_auc** score aft
 
 ### Repository Structure
 
-```tree
+```
 Titanic/
-├── LICENSE         
-├── README.md             # This document
-├── Titanic.ipynb         # Main analysis, EDA, feature engineering, and modeling
-├── test.csv              # Original test data
-├── train.csv             # Original training data
-└── requirements.txt      # Python dependencies
+├── LICENSE
+├── README.md                     # This document
+├── Titanic.ipynb                 # Main analysis: EDA, feature engineering, modeling
+├── test.csv                      # Original test data
+├── train.csv                     # Original training data
+├── gender_submission.csv         # Sample submission file
+└── requirements.txt              # Python dependencies
 ```
 
 ### Setup and Running
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/ishaq-ML/Titanic.git](https://github.com/ishaq-ML/Titanic.git)
-    cd Titanic
-    ```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Ishaq-ML/Titanic.git
+   cd Titanic
+   ```
 
-2.  **Install dependencies:**
-    It is recommended to use a virtual environment.
-    ```bash
-    pip install -r requirements.txt
-    ```
+2. **Install dependencies:**
+   It is recommended to use a virtual environment.
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3.  **Run the Analysis:**
-    To execute the full data science workflow, including EDA, model training, and evaluation, open the main notebook:
-    ```bash
-    jupyter notebook Titanic.ipynb
-    ```
+3. **Run the Analysis:**
+   ```bash
+   jupyter notebook Titanic.ipynb
+   ```
 
 ---
 
@@ -131,13 +138,15 @@ Titanic/
 
 ### Dependencies
 
-This project relies on the following major Python libraries (check `requirements.txt` for exact versions):
-
 * `pandas`
 * `numpy`
 * `matplotlib`
 * `seaborn`
+* `squarify`
 * `scikit-learn`
+* `xgboost`
+* `lightgbm`
+* `ydata-profiling`
 * `jupyter`
 
 ### License
